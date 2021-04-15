@@ -2,43 +2,49 @@ package truck_passing_the_bridge;
 import java.util.*;
 public class Solution {
 	public int solution(int bridge_length, int weight, int[] truck_weights) {
-		ArrayList<Truck> done_list = new ArrayList<>();
-		ArrayList<Truck> crossing_list = new ArrayList<>();
-		
+		Queue<Truck> wait_list = new LinkedList<>();
+		Queue<Truck> crossing_list = new LinkedList<>();
         int cnt = 0; int i =0;
         int currentWeightSum = 0;
         
-        while(done_list.size() != truck_weights.length){
-        	System.out.println("cnt : " + cnt);
+        for (int j : truck_weights) {
+        	wait_list.offer(new Truck(j));
+		}
+        
+        while(!wait_list.isEmpty() || !crossing_list.isEmpty()){
         	cnt++;
-        	//weight
-        	if(i<truck_weights.length){
-        		if(weight >= currentWeightSum + truck_weights[i]){
-            		Truck t = new Truck(truck_weights[i], 0);
-            		currentWeightSum += t.weight;
-            		crossing_list.add(t);
-            		i++;
-            	}
-        	}
+//        	System.out.println("cnt : " + cnt);
         	
         	//distance
-        	for (int j = 0; j < crossing_list.size(); j++) {
-        		crossing_list.get(j).duringDistance++;
-        		if(bridge_length < crossing_list.get(j).duringDistance){
-        			currentWeightSum -= crossing_list.get(j).weight;
-            		done_list.add(crossing_list.get(j));
-            		crossing_list.remove(j);
-            	}
+        	if(crossing_list.isEmpty()){
+        		crossing_list.offer(wait_list.poll());
+        		currentWeightSum += crossing_list.peek().weight;
+        		continue;
+        	}
+        	for (Truck j : crossing_list) {
+				j.duringDistance++;
 			}
+        	// out
+        	if(crossing_list.peek().duringDistance>bridge_length){
+        		currentWeightSum -= crossing_list.poll().weight;
+        	}
+        	//in
+        	if(!wait_list.isEmpty() && (currentWeightSum + wait_list.peek().weight <= weight)){
+        		crossing_list.offer(wait_list.poll());
+        		currentWeightSum += crossing_list.peek().weight;
+        	}
+        	
 		}
         
         System.out.println(cnt);
         return cnt;
     }
 	public static void main(String[] args) {
-		int bridge_length = 2;
-		int weight = 10;
-		int[] truck_weights ={7,4,5,6};
+		int bridge_length = 100;
+		int weight = 100;
+//		int[] truck_weights = {7,4,5,6};
+		int[] truck_weights ={10,10,10,10,10,10,10,10,10,10};
+//		int[] truck_weights ={10};
 		new Solution().solution(bridge_length, weight, truck_weights);
 	}
 }
@@ -46,12 +52,12 @@ class Truck{
 	public int weight;
 	public int duringDistance;
 	
-	Truck(int weight, int duringDistance){
+	public Truck(int weight){
 		this.weight = weight;
-		this.duringDistance = duringDistance;
+		this.duringDistance = 1;
 	}
+	public void move(){
+		duringDistance++;
+	}
+	
 }
-//class Traffic_Bridge{
-//	public int current_weight;
-//	public int 
-//}
