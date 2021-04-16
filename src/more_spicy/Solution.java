@@ -1,52 +1,41 @@
 package more_spicy;
 
+import java.util.*;
+
 public class Solution { //Heap
 	public int solution(int[] scoville, int K) {
         int answer = 0;
-        int arr[] = sort(scoville);
-        for (int i = 0; i < scoville.length; i++) {
+        Queue<Integer> heap = new PriorityQueue<Integer>();
+        
+        for(int i : scoville){
+        	heap.offer(i);
+        }
+        
+        while(heap.size()>=1){
+        	if(heap.size()==1){
+        		if(heap.peek()>=K) return answer;
+        		else return -1;
+        	}
         	
-		}
-        while(true){
-        	if(K<arr[0]) break;
-        	int f_s = arr[0];
-        	System.out.print("f_s : " + f_s+" ");
-        	int s_s = arr[1];
-        	System.out.println("s_s : " + s_s);
-        	arr = array_cal(arr, f_s+(s_s*2));
+        	int a = heap.poll();
+        	if(a>=K) return answer;
+        	int b = heap.poll();
+        	
+        	
+        	heap.offer(cal(a,b));
         	
         	answer++;
         }
-        System.out.println(answer);
         return answer;
     }
 	
-	public int[] sort(int[] scoville){
-		int[] arr = scoville.clone();
-		for (int i = arr.length-1; i > 0 ; i--) {
-			for (int j = 0; j < i; j++) {
-				if(arr[i]<arr[j]){
-					int temp = arr[i];
-					arr[i] = arr[j];
-					arr[j] = temp;
-				}
-			}
-		}
-		return arr;
-	}
-	public int[] array_cal(int[] arr, int data){
-		int[] temp = new int[arr.length-1];
-		
-		for (int i = 2; i < arr.length; i++) {
-			temp[i-2] = arr[i]; 
-		}
-		temp[temp.length-1] = data;
-		return sort(temp);
+	public int cal(int data1, int data2){
+		return data1+(data2*2);
 	}
 	
 	public static void main(String[] args){
 		int[] scoville = {1, 2, 3, 9, 10, 12};
 		int k = 7;
-		new Solution().solution(scoville, k);
+		System.out.println(new Solution().solution(scoville, k));
 	}
 }
